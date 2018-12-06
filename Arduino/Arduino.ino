@@ -1,6 +1,6 @@
 // AL2 code originally from: nsd.dyndns.org/speech/ 
 
-#define VOICE_SPEED   1; // 1 = 4mhz clock ( higher pitched ), 2 = 2.66 ( lower pitched ), 3 = crazy low
+#define VOICE_SPEED   2; // 1 = 4mhz clock ( higher pitched ), 2 = 2.66 ( lower pitched ), 3 = crazy low
 
 // SPO pin assignments on arduino
 #define SPO_A1    2
@@ -120,6 +120,7 @@ boolean newData = false;
 char receivedNewData[COMMAND_LENGTH];
 uint8_t phraseBuffer[200] {}; 
 int phraseLength = 0;
+bool controlMode = false;
 
 void setup() {
 
@@ -170,6 +171,11 @@ void setup() {
 void loop() {
 
   checkSerialData();
+
+  // until a command is sent, just say random giberish
+  if (!controlMode)
+    say(floor(random(0, 63)));
+    
   delay(10);
 }
 
@@ -193,6 +199,8 @@ void speakPROGMEMPhrase(const uint8_t *phrase, size_t len) {
 }
 
 void processSerialCommand(char* command, char* param) {
+
+  controlMode = true;
 
   // commands should be in the format "<COMMAND:PARAMER>"
 
